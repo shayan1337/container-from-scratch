@@ -4,6 +4,7 @@ import (
   "fmt"
   "os"
   "os/exec"
+  "syscall"
 )
 
 
@@ -17,7 +18,7 @@ func main() {
 }
 
 func run() {
-  fmt.Printf("Running %v s PID %d \n", os.Args[2:], os.Getpid())
+  fmt.Printf("Running %v as PID %d \n", os.Args[2:], os.Getpid())
 
   cmd := exec.Command(os.Args[2], os.Args[3:]...)
 
@@ -25,5 +26,15 @@ func run() {
   cmd.Stdout= os.Stdout
   cmd.Stderr = os.Stderr
 
-  cmd.Run()
+  cmd.SysProcAttr = &syscall.SysProcAttr{
+    Cloneflags: syscall.CLONE_NEWUTS,
+  }
+
+  must(cmd.Run())
+}
+
+func must(err error) {
+    if err !=nil {
+        panic(err)
+    }
 }
