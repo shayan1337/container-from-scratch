@@ -46,6 +46,10 @@ func child() {
   cmd.Stdout= os.Stdout
   cmd.Stderr = os.Stderr
 
+  syscall.Chroot("/root/containerfs")
+  os.Chdir("/")
+  syscall.Mount("proc", "proc", "proc", 0, "")
+  
   must(cmd.Run())
 }
 
